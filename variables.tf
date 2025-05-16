@@ -66,9 +66,9 @@ variable "sub_pca_root_pca_arn" {
   default     = null
 }
 
-variable "sub_pca_certificate_validity_in_years" {
+variable "pca_certificate_validity_in_years" {
   type        = number
-  description = "The number of years that the requested certificate from the Root CA remains valid for - must be specified if pca_type is SUBORDINATE"
+  description = "The number of years that the CA certificate remains valid for"
   default     = null
 }
 

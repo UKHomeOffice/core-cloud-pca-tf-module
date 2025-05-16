@@ -94,7 +94,7 @@ resource "aws_acmpca_certificate" "root" {
 
   validity {
     type  = "YEARS"
-    value = var.sub_pca_certificate_validity_in_years
+    value = var.pca_certificate_validity_in_years
   }
 
   depends_on = [aws_acmpca_certificate_authority.this]
@@ -123,7 +123,7 @@ resource "aws_acmpca_certificate" "subordinate" {
 
   validity {
     type  = "YEARS"
-    value = var.sub_pca_certificate_validity_in_years
+    value = var.pca_certificate_validity_in_years
   }
 
   depends_on = [aws_acmpca_certificate_authority.this]
