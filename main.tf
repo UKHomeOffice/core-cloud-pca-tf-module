@@ -1,3 +1,5 @@
+data "aws_partition" "current" {}
+
 resource "aws_s3_bucket" "pca_crl" {
   bucket        = "${substr(var.ca_subject_common_name, 0, 55)}-pca-crl"
   force_destroy = true
