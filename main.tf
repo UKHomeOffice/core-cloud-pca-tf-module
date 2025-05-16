@@ -82,6 +82,34 @@ resource "aws_acmpca_permission" "this" {
   depends_on = [aws_acmpca_certificate_authority.this]
 }
 
+### If CA is created in ROOT Mode create self signed certificate
+resource "aws_acmpca_certificate" "root" {
+  count = upper(trimspace(var.pca_type)) == "ROOT" ? 1 : 0
+
+  certificate_authority_arn   = aws_acmpca_certificate_authority.this.arn
+  certificate_signing_request = aws_acmpca_certificate_authority.this.certificate_signing_request
+  signing_algorithm           = var.ca_signing_algorithm
+
+  template_arn = "arn:${data.aws_partition.current.partition}:acm-pca:::template/RootCACertificate/V1"
+
+  validity {
+    type  = "YEARS"
+    value = var.sub_pca_certificate_validity_in_years
+  }
+
+  depends_on = [aws_acmpca_certificate_authority.this]
+}
+
+resource "aws_acmpca_certificate_authority_certificate" "root" {
+  count = upper(trimspace(var.pca_type)) == "ROOT" ? 1 : 0
+
+  certificate_authority_arn = aws_acmpca_certificate_authority.this.arn
+
+  certificate       = aws_acmpca_certificate.root[0].certificate
+  certificate_chain = aws_acmpca_certificate.root[0].certificate_chain
+
+  depends_on = [aws_acmpca_certificate.root]
+}
 
 ### If CA is created in SUBORDINATE Mode you will need to provide a cert from a root CA
 resource "aws_acmpca_certificate" "subordinate" {
@@ -99,4 +127,15 @@ resource "aws_acmpca_certificate" "subordinate" {
   }
 
   depends_on = [aws_acmpca_certificate_authority.this]
+}
+
+resource "aws_acmpca_certificate_authority_certificate" "subordinate" {
+  count = upper(trimspace(var.pca_type)) == "SUBORDINATE" ? 1 : 0
+
+  certificate_authority_arn = aws_acmpca_certificate_authority.this.arn
+
+  certificate       = aws_acmpca_certificate.subordinate[0].certificate
+  certificate_chain = aws_acmpca_certificate.subordinate[0].certificate_chain
+
+  depends_on = [aws_acmpca_certificate.subordinate]
 }
