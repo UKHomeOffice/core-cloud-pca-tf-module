@@ -1,6 +1,8 @@
 data "aws_partition" "current" {}
 
 resource "aws_s3_bucket" "pca_crl" {
+  count = var.ca_crl_enabled ? 1 : 0
+
   bucket        = "${substr(var.ca_subject_common_name, 0, 55)}-pca-crl"
   force_destroy = true
 
@@ -17,8 +19,8 @@ data "aws_iam_policy_document" "pca_crl_bucket_access" {
     ]
 
     resources = [
-      aws_s3_bucket.pca_crl.arn,
-      "${aws_s3_bucket.pca_crl.arn}/*",
+      aws_s3_bucket.pca_crl[0].arn,
+      "${aws_s3_bucket.pca_crl[0].arn}/*",
     ]
 
     principals {
@@ -29,7 +31,7 @@ data "aws_iam_policy_document" "pca_crl_bucket_access" {
 }
 
 resource "aws_s3_bucket_policy" "pca_crl" {
-  bucket = aws_s3_bucket.pca_crl.id
+  bucket = aws_s3_bucket.pca_crl[0].id
   policy = data.aws_iam_policy_document.pca_crl_bucket_access.json
 }
 
@@ -53,14 +55,14 @@ resource "aws_acmpca_certificate_authority" "this" {
 
   revocation_configuration {
     crl_configuration {
-      enabled            = true
+      enabled            = var.ca_crl_enabled
       expiration_in_days = var.ca_crl_expiration_time_in_days
-      s3_bucket_name     = aws_s3_bucket.pca_crl.id
+      s3_bucket_name     = aws_s3_bucket.pca_crl[0].id
       s3_object_acl      = "BUCKET_OWNER_FULL_CONTROL"
     }
 
     ocsp_configuration {
-      enabled = true
+      enabled = var.ca_ocsp_enabled
     }
   }
 

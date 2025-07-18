@@ -54,6 +54,18 @@ variable "ca_subject_organization" {
   description = " Legal name of the organization with which the certificate subject is affiliated. Must be less than or equal to 64 characters in length"
 }
 
+variable "ca_crl_enabled" {
+  type        = bool
+  description = "Switch to enable Certificate Revocation List"
+  default     = false
+}
+
+variable "ca_ocsp_enabled" {
+  type        = bool
+  description = "Switch to enable Online Certificate Status Protocol for CA"
+  default     = false
+}
+
 variable "ca_crl_expiration_time_in_days" {
   type        = number
   description = "Number of days until a certificate expires"
