@@ -12,6 +12,7 @@ resource "aws_s3_bucket" "pca_crl" {
 
 data "aws_iam_policy_document" "pca_crl_bucket_access" {
   statement {
+    sid = "PCAS3Access"
     actions = [
       "s3:GetBucketAcl",
       "s3:GetBucketLocation",
@@ -27,6 +28,30 @@ data "aws_iam_policy_document" "pca_crl_bucket_access" {
     principals {
       identifiers = ["acm-pca.amazonaws.com"]
       type        = "Service"
+    }
+  }
+
+  statement {
+    sid = "AllowSSLRequestsOnly"
+    effect = "Deny"
+    actions = [
+      "s3:*"
+    ]
+
+    resources = [
+      aws_s3_bucket.pca_crl[0].arn,
+      "${aws_s3_bucket.pca_crl[0].arn}/*",
+    ]
+
+    principals {
+      identifiers = ["*"]
+      type        = "*"
+    }
+
+    condition {
+      test = "Bool"
+      variable = "aws:SecureTransport"
+      values = false
     }
   }
 }
