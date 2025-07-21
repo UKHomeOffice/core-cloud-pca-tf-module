@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {}
 resource "aws_s3_bucket" "pca_crl" {
   count = var.ca_crl_enabled ? 1 : 0
 
-  bucket        = coalesce("${var.ca_crl_bucket_name}", "cc-pca-${data.aws_caller_identity.current.account_id}-${substr(replace(var.ca_subject_common_name, " ", "-"), 0, 35)}-crl")
+  bucket        = lower(coalesce("${var.ca_crl_bucket_name}", "cc-pca-${data.aws_caller_identity.current.account_id}-${substr(replace(var.ca_subject_common_name, " ", "-"), 0, 35)}-crl"))
   force_destroy = true
 
   tags = var.tags
