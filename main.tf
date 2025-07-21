@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "pca_crl_bucket_access" {
   }
 
   statement {
-    sid = "AllowSSLRequestsOnly"
+    sid    = "AllowSSLRequestsOnly"
     effect = "Deny"
     actions = [
       "s3:*"
@@ -49,9 +49,9 @@ data "aws_iam_policy_document" "pca_crl_bucket_access" {
     }
 
     condition {
-      test = "Bool"
+      test     = "Bool"
       variable = "aws:SecureTransport"
-      values = false
+      values   = false
     }
   }
 }
