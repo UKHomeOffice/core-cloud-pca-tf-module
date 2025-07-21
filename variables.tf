@@ -30,13 +30,13 @@ variable "permanent_deletion_time_in_days" {
 variable "ca_key_algorithm" {
   type        = string
   description = "Type of the public key algorithm and size, in bits, of the key pair that your key pair creates when it issues a certificate"
-  default     = "RSA_4096"
+  default     = "EC_prime256v1" #ECDSA P256
 }
 
 variable "ca_signing_algorithm" {
   type        = string
   description = "Name of the algorithm your private CA uses to sign certificate requests"
-  default     = "SHA512WITHRSA"
+  default     = "SHA512WITHECDSA"
 }
 
 variable "ca_subject_common_name" {
@@ -58,6 +58,12 @@ variable "ca_crl_enabled" {
   type        = bool
   description = "Switch to enable Certificate Revocation List"
   default     = false
+}
+
+variable "ca_crl_bucket_name" {
+  type        = string
+  description = "Optional - custom S3 bucket name to store CRL"
+  default     = null
 }
 
 variable "ca_ocsp_enabled" {
