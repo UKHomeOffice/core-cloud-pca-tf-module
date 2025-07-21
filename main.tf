@@ -44,8 +44,8 @@ resource "aws_acmpca_certificate_authority" "this" {
   key_storage_security_standard = var.key_storage_security_standard
 
   certificate_authority_configuration {
-    key_algorithm     = upper(trimspace(var.ca_key_algorithm))
-    signing_algorithm = upper(trimspace(var.ca_signing_algorithm))
+    key_algorithm     = trimspace(var.ca_key_algorithm)
+    signing_algorithm = trimspace(var.ca_signing_algorithm)
 
     subject {
       common_name  = var.ca_subject_common_name

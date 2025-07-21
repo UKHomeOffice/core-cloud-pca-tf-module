@@ -29,6 +29,7 @@ No modules.
 | [aws_acmpca_permission.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_permission) | resource |
 | [aws_s3_bucket.pca_crl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_policy.pca_crl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.pca_crl_bucket_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
@@ -36,11 +37,12 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_ca_crl_bucket_name"></a> [ca\_crl\_bucket\_name](#input\_ca\_crl\_bucket\_name) | Optional - custom S3 bucket name to store CRL | `string` | `null` | no |
 | <a name="input_ca_crl_enabled"></a> [ca\_crl\_enabled](#input\_ca\_crl\_enabled) | Switch to enable Certificate Revocation List | `bool` | `false` | no |
 | <a name="input_ca_crl_expiration_time_in_days"></a> [ca\_crl\_expiration\_time\_in\_days](#input\_ca\_crl\_expiration\_time\_in\_days) | Number of days until a certificate expires | `number` | `7` | no |
-| <a name="input_ca_key_algorithm"></a> [ca\_key\_algorithm](#input\_ca\_key\_algorithm) | Type of the public key algorithm and size, in bits, of the key pair that your key pair creates when it issues a certificate | `string` | `"RSA_4096"` | no |
+| <a name="input_ca_key_algorithm"></a> [ca\_key\_algorithm](#input\_ca\_key\_algorithm) | Type of the public key algorithm and size, in bits, of the key pair that your key pair creates when it issues a certificate | `string` | `"EC_prime256v1"` | no |
 | <a name="input_ca_ocsp_enabled"></a> [ca\_ocsp\_enabled](#input\_ca\_ocsp\_enabled) | Switch to enable Online Certificate Status Protocol for CA | `bool` | `false` | no |
-| <a name="input_ca_signing_algorithm"></a> [ca\_signing\_algorithm](#input\_ca\_signing\_algorithm) | Name of the algorithm your private CA uses to sign certificate requests | `string` | `"SHA512WITHRSA"` | no |
+| <a name="input_ca_signing_algorithm"></a> [ca\_signing\_algorithm](#input\_ca\_signing\_algorithm) | Name of the algorithm your private CA uses to sign certificate requests | `string` | `"SHA512WITHECDSA"` | no |
 | <a name="input_ca_subject_common_name"></a> [ca\_subject\_common\_name](#input\_ca\_subject\_common\_name) | Fully qualified domain name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length | `string` | n/a | yes |
 | <a name="input_ca_subject_country"></a> [ca\_subject\_country](#input\_ca\_subject\_country) | Two digit code that specifies the country in which the certificate subject located. Must be less than or equal to 2 characters in length | `string` | n/a | yes |
 | <a name="input_ca_subject_organization"></a> [ca\_subject\_organization](#input\_ca\_subject\_organization) | Legal name of the organization with which the certificate subject is affiliated. Must be less than or equal to 64 characters in length | `string` | n/a | yes |
