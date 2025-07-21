@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "pca_crl_bucket_access" {
     condition {
       test     = "Bool"
       variable = "aws:SecureTransport"
-      values   = "false"
+      values   = ["false"]
     }
   }
 }
