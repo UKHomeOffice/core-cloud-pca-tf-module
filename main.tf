@@ -73,9 +73,12 @@ resource "aws_acmpca_certificate_authority" "this" {
     signing_algorithm = trimspace(var.ca_signing_algorithm)
 
     subject {
-      common_name  = var.ca_subject_common_name
-      country      = var.ca_subject_country
-      organization = var.ca_subject_organization
+      common_name         = var.ca_subject_common_name
+      organization        = var.ca_subject_organization
+      organizational_unit = var.ca_subject_organization_unit
+      country             = upper(var.ca_subject_country)
+      state               = var.ca_subject_state
+      locality            = var.ca_subject_locality
     }
   }
 
