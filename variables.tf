@@ -41,7 +41,18 @@ variable "ca_signing_algorithm" {
 
 variable "ca_subject_common_name" {
   type        = string
-  description = "Fully qualified domain name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length"
+  description = "For CA and end-entity certificates in a private PKI, the common name (CN) can be any string. For publicly trusted certificates, Fully Qualified Domain Name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length"
+}
+
+variable "ca_subject_organization" {
+  type        = string
+  description = "The legal name of the organization with which the certificate subject is affiliated. Must be less than or equal to 64 characters in length"
+}
+
+variable "ca_subject_organization_unit" {
+  type        = string
+  description = "Optional - A subdivision or unit of the organization (such as sales or finance) with which the certificate subject is affiliated. Must be less than or equal to 64 characters in length"
+  default     = null
 }
 
 variable "ca_subject_country" {
@@ -49,9 +60,16 @@ variable "ca_subject_country" {
   description = "Two digit code that specifies the country in which the certificate subject located. Must be less than or equal to 2 characters in length"
 }
 
-variable "ca_subject_organization" {
+variable "ca_subject_state" {
   type        = string
-  description = " Legal name of the organization with which the certificate subject is affiliated. Must be less than or equal to 64 characters in length"
+  description = "Optional - State in which the subject of the certificate is located. Must be less than or equal to 64 characters in length"
+  default     = null
+}
+
+variable "ca_subject_locality" {
+  type        = string
+  description = "Optional - The locality (such as a city or town) in which the certificate subject is located. Must be less than or equal to 64 characters in length"
+  default     = null
 }
 
 variable "ca_crl_enabled" {
