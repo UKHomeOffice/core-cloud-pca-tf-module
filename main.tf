@@ -233,8 +233,8 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_combined" {
   count = (length(var.pca_allowed_aws_organizations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
   override_policy_documents = [
-    data.aws_iam_policy_document.pca_cross_account_resource_policy_organizations[0].json,
-    data.aws_iam_policy_document.pca_cross_account_resource_policy_accounts[0].json
+    try(data.aws_iam_policy_document.pca_cross_account_resource_policy_organizations[0].json, ""),
+    try(data.aws_iam_policy_document.pca_cross_account_resource_policy_accounts[0].json, "")
   ]
 }
 
