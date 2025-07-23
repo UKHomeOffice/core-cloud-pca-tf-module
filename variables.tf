@@ -114,7 +114,7 @@ variable "pca_acm_access" {
   default     = false
 }
 
-variable "pca_allowed_aws_organizations" {
+variable "pca_allowed_aws_organisations" {
   type        = list(string)
   description = "Optional - Cross Account - The AWS OrgIDs that can request certificates from the PCA"
   default     = []
