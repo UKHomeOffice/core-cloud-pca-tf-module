@@ -1,7 +1,3 @@
-locals {
-  merged_cross_account_list = concat(var.pca_allowed_aws_organizations, var.pca_allowed_aws_accounts)
-}
-
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
@@ -180,7 +176,7 @@ resource "aws_acmpca_certificate_authority_certificate" "subordinate" {
 # Resource Policy - For Cross account, generally just used for requesting certs
 ###
 
-data "aws_iam_policy_document" "pca_cross_account_organizations" {
+data "aws_iam_policy_document" "pca_cross_account_resource_policy_organizations" {
   count = length(var.pca_allowed_aws_organizations) > 0 ? 1 : 0
   statement {
     sid    = "CrossAccountPCAAccess"
@@ -235,15 +231,15 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
 }
 
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_combined" {
-  count = length(local.merged_cross_account_list) > 0 ? 1 : 0
+  count = (length(var.pca_allowed_aws_organizations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
   override_policy_documents = [
-    data.aws_iam_policy_document.pca_resource_policy_organizations[0].json,
-    data.aws_iam_policy_document.pca_resource_policy_accounts[0].json
+    data.aws_iam_policy_document.pca_cross_account_resource_policy_organizations[0].json,
+    data.aws_iam_policy_document.pca_cross_account_resource_policy_accounts[0].json
   ]
 }
 
 resource "aws_acmpca_policy" "pca_cross_account_resource_policy" {
-  count        = length(local.merged_cross_account_list) > 0 ? 1 : 0
+  count        = (length(var.pca_allowed_aws_organizations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
   resource_arn = aws_acmpca_certificate_authority.this.arn
-  policy       = data.aws_iam_policy_document.pca_resource_policy_combined[0].json
+  policy       = data.aws_iam_policy_document.pca_cross_account_resource_policy_combined[0].json
 }
