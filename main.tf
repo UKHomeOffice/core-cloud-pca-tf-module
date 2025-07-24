@@ -210,7 +210,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
   dynamic statement {
     for_each = toset(var.pca_allowed_shared_templates)
     content {
-      sid    = "CrossAccountPCAAccessOrganisation${split("/", each.key)[0]}"
+      sid    = "CrossAccountPCAAccessOrganisation${split("/", statement.key)[0]}"
       effect = "Allow"
       actions = [
         "acm-pca:IssueCertificate"
@@ -224,7 +224,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
       condition {
         test     = "StringEquals"
         variable = "acm-pca:TemplateArn"
-        values   = ["arn:aws:acm-pca:::template/${each.key}"]
+        values   = ["arn:aws:acm-pca:::template/${statement.key}"]
       }
 
       condition {
@@ -265,7 +265,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
   dynamic statement {
     for_each = toset(var.pca_allowed_shared_templates)
     content {
-      sid    = "CrossAccountPCAAccessAccoun${split("/", each.key)[0]}"
+      sid    = "CrossAccountPCAAccessAccoun${split("/", statement.key)[0]}"
       effect = "Allow"
       actions = [
         "acm-pca:IssueCertificate"
@@ -279,7 +279,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
       condition {
         test     = "StringEquals"
         variable = "acm-pca:TemplateArn"
-        values   = ["arn:aws:acm-pca:::template/${each.key}"]
+        values   = ["arn:aws:acm-pca:::template/${statement.key}"]
       }
     }
   }
