@@ -246,7 +246,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
   count = length(var.pca_allowed_aws_accounts) > 0 ? 1 : 0
   statement {
-    sid    = "CrossAccountPCAAccessAccount${split("/", each.key)[0]}"
+    sid    = "CrossAccountPCAAccessAccount"
     effect = "Allow"
     actions = [
       "acm-pca:DescribeCertificateAuthority",
@@ -265,7 +265,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
   dynamic statement {
     for_each = toset(var.pca_allowed_shared_templates)
     content {
-      sid    = "CrossAccountPCAAccessAccount2"
+      sid    = "CrossAccountPCAAccessAccoun${split("/", each.key)[0]}"
       effect = "Allow"
       actions = [
         "acm-pca:IssueCertificate"
