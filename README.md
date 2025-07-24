@@ -27,10 +27,14 @@ No modules.
 | [aws_acmpca_certificate_authority_certificate.root](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_certificate_authority_certificate) | resource |
 | [aws_acmpca_certificate_authority_certificate.subordinate](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_certificate_authority_certificate) | resource |
 | [aws_acmpca_permission.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_permission) | resource |
+| [aws_acmpca_policy.pca_cross_account_resource_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_policy) | resource |
 | [aws_s3_bucket.pca_crl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_policy.pca_crl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.pca_crl_bucket_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.pca_cross_account_resource_policy_accounts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.pca_cross_account_resource_policy_combined](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.pca_cross_account_resource_policy_organisations](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
 ## Inputs
@@ -43,7 +47,7 @@ No modules.
 | <a name="input_ca_key_algorithm"></a> [ca\_key\_algorithm](#input\_ca\_key\_algorithm) | Type of the public key algorithm and size, in bits, of the key pair that your key pair creates when it issues a certificate | `string` | `"EC_prime256v1"` | no |
 | <a name="input_ca_ocsp_enabled"></a> [ca\_ocsp\_enabled](#input\_ca\_ocsp\_enabled) | Switch to enable Online Certificate Status Protocol for CA | `bool` | `false` | no |
 | <a name="input_ca_signing_algorithm"></a> [ca\_signing\_algorithm](#input\_ca\_signing\_algorithm) | Name of the algorithm your private CA uses to sign certificate requests | `string` | `"SHA512WITHECDSA"` | no |
-| <a name="input_ca_subject_common_name"></a> [ca\_subject\_common\_name](#input\_ca\_subject\_common\_name) | For CA and end-entity certificates in a private PKI, the common name (CN) can be any string. For publicly trusted certificates, Fully Qualified Domain Name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length | `string` | n/a | yes |
+| <a name="input_ca_subject_common_name"></a> [ca\_subject\_common\_name](#input\_ca\_subject\_common\_name) | For CA and end-entity certificates in a private PKI, the common name (CN) can be any string. For publicly trusted certificates,g Fully Qualified Domain Name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length | `string` | n/a | yes |
 | <a name="input_ca_subject_country"></a> [ca\_subject\_country](#input\_ca\_subject\_country) | Two digit code that specifies the country in which the certificate subject located. Must be less than or equal to 2 characters in length | `string` | n/a | yes |
 | <a name="input_ca_subject_locality"></a> [ca\_subject\_locality](#input\_ca\_subject\_locality) | Optional - The locality (such as a city or town) in which the certificate subject is located. Must be less than or equal to 64 characters in length | `string` | `null` | no |
 | <a name="input_ca_subject_organization"></a> [ca\_subject\_organization](#input\_ca\_subject\_organization) | The legal name of the organization with which the certificate subject is affiliated. Must be less than or equal to 64 characters in length | `string` | n/a | yes |
@@ -52,6 +56,8 @@ No modules.
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Wether or not PCA is enabled or not - PCA must be in an active state first if disabling | `bool` | `true` | no |
 | <a name="input_key_storage_security_standard"></a> [key\_storage\_security\_standard](#input\_key\_storage\_security\_standard) | Cryptographic key management compliance standard used for handling CA keys. Defaults to FIPS\_140\_2\_LEVEL\_3\_OR\_HIGHER in code | `string` | `null` | no |
 | <a name="input_pca_acm_access"></a> [pca\_acm\_access](#input\_pca\_acm\_access) | Whether or not to allow ACM to access the PCA to request/renew certs | `bool` | `false` | no |
+| <a name="input_pca_allowed_aws_accounts"></a> [pca\_allowed\_aws\_accounts](#input\_pca\_allowed\_aws\_accounts) | Optional - Cross Account - The AWS Accounts that can request certificates from the PCA | `list(string)` | `[]` | no |
+| <a name="input_pca_allowed_aws_organisation"></a> [pca\_allowed\_aws\_organisation](#input\_pca\_allowed\_aws\_organisation) | Optional - Cross Account - The AWS OrgID that can request certificates from the PCA | `string` | `""` | no |
 | <a name="input_pca_certificate_validity_in_years"></a> [pca\_certificate\_validity\_in\_years](#input\_pca\_certificate\_validity\_in\_years) | The number of years that the CA certificate remains valid for | `number` | `null` | no |
 | <a name="input_pca_type"></a> [pca\_type](#input\_pca\_type) | The type of CA (Certificate Authority): ROOT \| SUBORDINATE | `string` | n/a | yes |
 | <a name="input_permanent_deletion_time_in_days"></a> [permanent\_deletion\_time\_in\_days](#input\_permanent\_deletion\_time\_in\_days) | Number of days to make a CA restorable after it has been deleted, must be between 7 to 30 days | `number` | `30` | no |

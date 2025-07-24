@@ -177,18 +177,16 @@ resource "aws_acmpca_certificate_authority_certificate" "subordinate" {
 ###
 
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations" {
-  count = length(var.pca_allowed_aws_organisations) > 0 ? 1 : 0
+  count = length(var.pca_allowed_aws_organisation) > 0 ? 1 : 0
   statement {
-    sid    = "CrossAccountPCAAccessOrganisation"
+    sid    = "CrossAccountPCAAccessOrganisation1"
     effect = "Allow"
     actions = [
       "acm-pca:DescribeCertificateAuthority",
       "acm-pca:GetCertificate",
       "acm-pca:GetCertificateAuthorityCertificate",
-      "acm-pca:ListPermissions",
-      "acm-pca:IssueCertificate"
+      "acm-pca:ListPermissions"
     ]
-    resources = []
 
     principals {
       identifiers = ["*"]
@@ -198,7 +196,38 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = var.pca_allowed_aws_organisations
+      values   = [var.pca_allowed_aws_organisation]
+    }
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:PrincipalAccount"
+      values   = ["${data.aws_caller_identity.current.account_id}"]
+    }
+  }
+
+  statement {
+    sid    = "CrossAccountPCAAccessOrganisation2"
+    effect = "Allow"
+    actions = [
+      "acm-pca:IssueCertificate"
+    ]
+
+    principals {
+      identifiers = ["*"]
+      type        = "*"
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "acm-pca:TemplateArn"
+      values   = "arn:aws:acm-pca:::template/EndEntityCertificate/V1"
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values   = [var.pca_allowed_aws_organisation]
     }
 
     condition {
@@ -212,26 +241,43 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
   count = length(var.pca_allowed_aws_accounts) > 0 ? 1 : 0
   statement {
-    sid    = "CrossAccountPCAAccessAccount"
+    sid    = "CrossAccountPCAAccessAccount1"
     effect = "Allow"
     actions = [
       "acm-pca:DescribeCertificateAuthority",
       "acm-pca:GetCertificate",
       "acm-pca:GetCertificateAuthorityCertificate",
-      "acm-pca:ListPermissions",
-      "acm-pca:IssueCertificate"
+      "acm-pca:ListPermissions"
     ]
-    resources = []
 
     principals {
       type        = "AWS"
       identifiers = var.pca_allowed_aws_accounts
     }
   }
+
+  statement {
+    sid    = "CrossAccountPCAAccessAccount2"
+    effect = "Allow"
+    actions = [
+      "acm-pca:IssueCertificate"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = var.pca_allowed_aws_accounts
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "acm-pca:TemplateArn"
+      values   = "arn:aws:acm-pca:::template/EndEntityCertificate/V1"
+    }
+  }
 }
 
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_combined" {
-  count = (length(var.pca_allowed_aws_organisations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
+  count = (length(var.pca_allowed_aws_organisation) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
   override_policy_documents = [
     try(data.aws_iam_policy_document.pca_cross_account_resource_policy_organisations[0].json, ""),
     try(data.aws_iam_policy_document.pca_cross_account_resource_policy_accounts[0].json, "")
@@ -239,7 +285,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_combined" {
 }
 
 resource "aws_acmpca_policy" "pca_cross_account_resource_policy" {
-  count        = (length(var.pca_allowed_aws_organisations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
+  count        = (length(var.pca_allowed_aws_organisation) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
   resource_arn = aws_acmpca_certificate_authority.this.arn
   policy       = data.aws_iam_policy_document.pca_cross_account_resource_policy_combined[0].json
 }
