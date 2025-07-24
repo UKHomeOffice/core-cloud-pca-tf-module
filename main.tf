@@ -185,7 +185,8 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
       "acm-pca:DescribeCertificateAuthority",
       "acm-pca:GetCertificate",
       "acm-pca:GetCertificateAuthorityCertificate",
-      "acm-pca:ListPermissions"
+      "acm-pca:ListPermissions",
+      "acm-pca:ListTags"
     ]
 
     principals {
@@ -247,7 +248,8 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
       "acm-pca:DescribeCertificateAuthority",
       "acm-pca:GetCertificate",
       "acm-pca:GetCertificateAuthorityCertificate",
-      "acm-pca:ListPermissions"
+      "acm-pca:ListPermissions",
+      "acm-pca:ListTags"
     ]
 
     principals {
