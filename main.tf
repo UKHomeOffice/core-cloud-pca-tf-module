@@ -12,7 +12,8 @@ resource "aws_s3_bucket" "pca_crl" {
 
 data "aws_iam_policy_document" "pca_crl_bucket_access" {
   statement {
-    sid = "PCAS3Access"
+    sid    = "PCAS3Access"
+    effect = "Allow"
     actions = [
       "s3:GetBucketAcl",
       "s3:GetBucketLocation",
@@ -169,4 +170,76 @@ resource "aws_acmpca_certificate_authority_certificate" "subordinate" {
   certificate_chain = aws_acmpca_certificate.subordinate[0].certificate_chain
 
   depends_on = [aws_acmpca_certificate.subordinate]
+}
+
+###
+# Resource Policy - For Cross account, generally just used for requesting certs
+###
+
+data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations" {
+  count = length(var.pca_allowed_aws_organisations) > 0 ? 1 : 0
+  statement {
+    sid    = "CrossAccountPCAAccessOrganisation"
+    effect = "Allow"
+    actions = [
+      "acm-pca:DescribeCertificateAuthority",
+      "acm-pca:GetCertificate",
+      "acm-pca:GetCertificateAuthorityCertificate",
+      "acm-pca:ListPermissions",
+      "acm-pca:IssueCertificate"
+    ]
+    resources = []
+
+    principals {
+      identifiers = ["*"]
+      type        = "*"
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values   = var.pca_allowed_aws_organisations
+    }
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:PrincipalAccount"
+      values   = ["${data.aws_caller_identity.current.account_id}"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
+  count = length(var.pca_allowed_aws_accounts) > 0 ? 1 : 0
+  statement {
+    sid    = "CrossAccountPCAAccessAccount"
+    effect = "Allow"
+    actions = [
+      "acm-pca:DescribeCertificateAuthority",
+      "acm-pca:GetCertificate",
+      "acm-pca:GetCertificateAuthorityCertificate",
+      "acm-pca:ListPermissions",
+      "acm-pca:IssueCertificate"
+    ]
+    resources = []
+
+    principals {
+      type        = "AWS"
+      identifiers = var.pca_allowed_aws_accounts
+    }
+  }
+}
+
+data "aws_iam_policy_document" "pca_cross_account_resource_policy_combined" {
+  count = (length(var.pca_allowed_aws_organisations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
+  override_policy_documents = [
+    try(data.aws_iam_policy_document.pca_cross_account_resource_policy_organisations[0].json, ""),
+    try(data.aws_iam_policy_document.pca_cross_account_resource_policy_accounts[0].json, "")
+  ]
+}
+
+resource "aws_acmpca_policy" "pca_cross_account_resource_policy" {
+  count        = (length(var.pca_allowed_aws_organisations) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
+  resource_arn = aws_acmpca_certificate_authority.this.arn
+  policy       = data.aws_iam_policy_document.pca_cross_account_resource_policy_combined[0].json
 }

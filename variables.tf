@@ -41,7 +41,7 @@ variable "ca_signing_algorithm" {
 
 variable "ca_subject_common_name" {
   type        = string
-  description = "For CA and end-entity certificates in a private PKI, the common name (CN) can be any string. For publicly trusted certificates, Fully Qualified Domain Name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length"
+  description = "For CA and end-entity certificates in a private PKI, the common name (CN) can be any string. For publicly trusted certificates,g Fully Qualified Domain Name (FQDN) associated with the certificate subject. Must be less than or equal to 64 characters in length"
 }
 
 variable "ca_subject_organization" {
@@ -112,6 +112,18 @@ variable "pca_acm_access" {
   type        = bool
   description = "Whether or not to allow ACM to access the PCA to request/renew certs"
   default     = false
+}
+
+variable "pca_allowed_aws_organisations" {
+  type        = list(string)
+  description = "Optional - Cross Account - The AWS OrgIDs that can request certificates from the PCA"
+  default     = []
+}
+
+variable "pca_allowed_aws_accounts" {
+  type        = list(string)
+  description = "Optional - Cross Account - The AWS Accounts that can request certificates from the PCA"
+  default     = []
 }
 
 variable "tags" {
