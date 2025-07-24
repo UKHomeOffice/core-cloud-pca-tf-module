@@ -222,7 +222,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
     condition {
       test     = "StringEquals"
       variable = "acm-pca:TemplateArn"
-      values   = ["arn:aws:acm-pca:::template/EndEntityCertificate/V1"]
+      values   = ["arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1"]
     }
 
     condition {
@@ -273,7 +273,7 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
     condition {
       test     = "StringEquals"
       variable = "acm-pca:TemplateArn"
-      values   = ["arn:aws:acm-pca:::template/EndEntityCertificate/V1"]
+      values   = ["arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1"]
     }
   }
 }
