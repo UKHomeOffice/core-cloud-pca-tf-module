@@ -123,7 +123,7 @@ variable "pca_allowed_aws_organisation" {
 variable "pca_allowed_aws_accounts" {
   type        = list(string)
   description = "Optional - Cross Account - The AWS Accounts that can request certificates from the PCA"
-  default     = []
+  default     = ["484907493197"]
 }
 
 variable "pca_allowed_shared_templates" {
