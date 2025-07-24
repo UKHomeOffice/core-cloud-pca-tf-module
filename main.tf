@@ -207,42 +207,46 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
     }
   }
 
-  statement {
-    sid    = "CrossAccountPCAAccessOrganisation2"
-    effect = "Allow"
-    actions = [
-      "acm-pca:IssueCertificate"
-    ]
+  dynamic statement {
+    for_each = toset(var.pca_allowed_shared_templates)
+    content {
+      sid    = "CrossAccountPCAAccessOrganisation${split("/", each.key)[0]}"
+      effect = "Allow"
+      actions = [
+        "acm-pca:IssueCertificate"
+      ]
 
-    principals {
-      identifiers = ["*"]
-      type        = "*"
-    }
+      principals {
+        identifiers = ["*"]
+        type        = "*"
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "acm-pca:TemplateArn"
-      values   = ["arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1"]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "acm-pca:TemplateArn"
+        values   = ["arn:aws:acm-pca:::template/${each.key}"]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values   = [var.pca_allowed_aws_organisation]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "aws:PrincipalOrgID"
+        values   = [var.pca_allowed_aws_organisation]
+      }
 
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:PrincipalAccount"
-      values   = ["${data.aws_caller_identity.current.account_id}"]
-    }
+      condition {
+        test     = "StringNotEquals"
+        variable = "aws:PrincipalAccount"
+        values   = ["${data.aws_caller_identity.current.account_id}"]
+      }
+    }  
   }
+    
 }
 
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
   count = length(var.pca_allowed_aws_accounts) > 0 ? 1 : 0
   statement {
-    sid    = "CrossAccountPCAAccessAccount1"
+    sid    = "CrossAccountPCAAccessAccount${split("/", each.key)[0]}"
     effect = "Allow"
     actions = [
       "acm-pca:DescribeCertificateAuthority",
@@ -258,22 +262,25 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
     }
   }
 
-  statement {
-    sid    = "CrossAccountPCAAccessAccount2"
-    effect = "Allow"
-    actions = [
-      "acm-pca:IssueCertificate"
-    ]
+  dynamic statement {
+    for_each = toset(var.pca_allowed_shared_templates)
+    content {
+      sid    = "CrossAccountPCAAccessAccount2"
+      effect = "Allow"
+      actions = [
+        "acm-pca:IssueCertificate"
+      ]
 
-    principals {
-      type        = "AWS"
-      identifiers = var.pca_allowed_aws_accounts
-    }
+      principals {
+        type        = "AWS"
+        identifiers = var.pca_allowed_aws_accounts
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "acm-pca:TemplateArn"
-      values   = ["arn:aws:acm-pca:::template/SubordinateCACertificate_PathLen0/V1"]
+      condition {
+        test     = "StringEquals"
+        variable = "acm-pca:TemplateArn"
+        values   = ["arn:aws:acm-pca:::template/${each.key}"]
+      }
     }
   }
 }

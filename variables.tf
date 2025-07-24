@@ -126,6 +126,19 @@ variable "pca_allowed_aws_accounts" {
   default     = []
 }
 
+variable "pca_allowed_shared_templates" {
+  type        = list(string)
+  description = "Optional - The list of templates to assign to the CA Shared Resource Policy"
+  default     = [
+    "EndEntityCertificate/V1",
+    "EndEntityClientAuthCertificate/V1",
+    "EndEntityServerAuthCertificate/V1",
+    "BlankEndEntityCertificate_APIPassthrough/V1",
+    "BlankEndEntityCertificate_APICSRPassthrough/V1",
+    "SubordinateCACertificate_PathLen0/V1"
+  ]
+}
+
 variable "tags" {
   type    = map(string)
   default = {}
