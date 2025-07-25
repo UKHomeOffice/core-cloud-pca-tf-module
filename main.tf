@@ -298,3 +298,28 @@ resource "aws_acmpca_policy" "pca_cross_account_resource_policy" {
   resource_arn = aws_acmpca_certificate_authority.this.arn
   policy       = data.aws_iam_policy_document.pca_cross_account_resource_policy_combined[0].json
 }
+
+# AWS RAM to Share CA if Desired
+resource "aws_ram_resource_share" "share_pca" {
+  name                      = "EKS-ROOT-CA-TEST"
+  allow_external_principals = false
+
+  permission_arns = [
+    "arn:aws:ram::aws:permission/AWSRAMSubordinateCACertificatePathLen0IssuanceCertificateAuthority"
+  ]
+
+  tags = var.tags
+}
+
+resource "aws_ram_resource_association" "share_pca" {
+  resource_share_arn = aws_ram_resource_share.share_pca.arn
+  resource_arn       = aws_acmpca_certificate_authority.this.arn
+}
+
+resource "aws_ram_principal_association" "share_pca" {
+  resource_share_arn = aws_ram_resource_share.share_pca.arn
+  principal          = [
+    "484907493197",
+    "084828599494"
+  ]
+}
