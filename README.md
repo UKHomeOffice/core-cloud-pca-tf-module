@@ -28,6 +28,9 @@ No modules.
 | [aws_acmpca_certificate_authority_certificate.subordinate](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_certificate_authority_certificate) | resource |
 | [aws_acmpca_permission.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_permission) | resource |
 | [aws_acmpca_policy.pca_cross_account_resource_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acmpca_policy) | resource |
+| [aws_ram_principal_association.share_pca_principals](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_principal_association) | resource |
+| [aws_ram_resource_association.share_pca_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_resource_association) | resource |
+| [aws_ram_resource_share.share_pca](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_resource_share) | resource |
 | [aws_s3_bucket.pca_crl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_policy.pca_crl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
@@ -58,7 +61,13 @@ No modules.
 | <a name="input_pca_acm_access"></a> [pca\_acm\_access](#input\_pca\_acm\_access) | Whether or not to allow ACM to access the PCA to request/renew certs | `bool` | `false` | no |
 | <a name="input_pca_allowed_aws_accounts"></a> [pca\_allowed\_aws\_accounts](#input\_pca\_allowed\_aws\_accounts) | Optional - Cross Account - The AWS Accounts that can request certificates from the PCA | `list(string)` | `[]` | no |
 | <a name="input_pca_allowed_aws_organisation"></a> [pca\_allowed\_aws\_organisation](#input\_pca\_allowed\_aws\_organisation) | Optional - Cross Account - The AWS OrgID that can request certificates from the PCA | `string` | `""` | no |
+| <a name="input_pca_allowed_shared_templates"></a> [pca\_allowed\_shared\_templates](#input\_pca\_allowed\_shared\_templates) | Optional - The list of templates to assign to the CA Shared Resource Policy | `list(string)` | `[]` | no |
 | <a name="input_pca_certificate_validity_in_years"></a> [pca\_certificate\_validity\_in\_years](#input\_pca\_certificate\_validity\_in\_years) | The number of years that the CA certificate remains valid for | `number` | `null` | no |
+| <a name="input_pca_ram_enable"></a> [pca\_ram\_enable](#input\_pca\_ram\_enable) | Enable this switch if you want to share PCA via RAM | `bool` | `false` | no |
+| <a name="input_pca_ram_permission_arns"></a> [pca\_ram\_permission\_arns](#input\_pca\_ram\_permission\_arns) | The list of managed RAM Permission ARNs that are desired - Required if RAM Share is enabled | `list(string)` | `[]` | no |
+| <a name="input_pca_ram_share_allow_external"></a> [pca\_ram\_share\_allow\_external](#input\_pca\_ram\_share\_allow\_external) | Enable this switch if PCA sharing is desired outside AWS Organisation | `bool` | `false` | no |
+| <a name="input_pca_ram_share_name"></a> [pca\_ram\_share\_name](#input\_pca\_ram\_share\_name) | The name of the Resource Share - Required if RAM Share is enabled | `string` | `""` | no |
+| <a name="input_pca_ram_share_principals"></a> [pca\_ram\_share\_principals](#input\_pca\_ram\_share\_principals) | The list of principals to share PCA with, can be account IDs, org ARN, OU ARNs - Required if RAM Share is enabled | `list(string)` | `[]` | no |
 | <a name="input_pca_type"></a> [pca\_type](#input\_pca\_type) | The type of CA (Certificate Authority): ROOT \| SUBORDINATE | `string` | n/a | yes |
 | <a name="input_permanent_deletion_time_in_days"></a> [permanent\_deletion\_time\_in\_days](#input\_permanent\_deletion\_time\_in\_days) | Number of days to make a CA restorable after it has been deleted, must be between 7 to 30 days | `number` | `30` | no |
 | <a name="input_sub_pca_root_pca_arn"></a> [sub\_pca\_root\_pca\_arn](#input\_sub\_pca\_root\_pca\_arn) | The ARN of the Root CA for the Subordinate CA to issue a Certificate Signing Request to - must be specified if pca\_type is SUBORDINATE | `string` | `null` | no |
