@@ -301,8 +301,10 @@ resource "aws_acmpca_policy" "pca_cross_account_resource_policy" {
 
 # AWS RAM to Share CA if Desired
 resource "aws_ram_resource_share" "share_pca" {
-  name                      = "EKS-ROOT-CA-TEST"
-  allow_external_principals = false
+  count = var.pca_ram_enable ? 1 : 0
+
+  name                      = var.pca_ram_share_name
+  allow_external_principals = var.pca_ram_share_allow_external
 
   permission_arns = [
     "arn:aws:ram::aws:permission/AWSRAMSubordinateCACertificatePathLen0IssuanceCertificateAuthority"
@@ -311,15 +313,16 @@ resource "aws_ram_resource_share" "share_pca" {
   tags = var.tags
 }
 
-resource "aws_ram_resource_association" "share_pca" {
-  resource_share_arn = aws_ram_resource_share.share_pca.arn
+resource "aws_ram_resource_association" "share_pca_association" {
+  count = var.pca_ram_enable ? 1 : 0
+
+  resource_share_arn = aws_ram_resource_share.share_pca[0].arn
   resource_arn       = aws_acmpca_certificate_authority.this.arn
 }
 
-resource "aws_ram_principal_association" "share_pca" {
-  resource_share_arn = aws_ram_resource_share.share_pca.arn
-  principal          = [
-    "484907493197",
-    "084828599494"
-  ]
+resource "aws_ram_principal_association" "share_pca_principals" {
+  for_each = toset(pca_ram_share_principals)
+
+  resource_share_arn = aws_ram_resource_share.share_pca[0].arn
+  principal          = each.key
 }
