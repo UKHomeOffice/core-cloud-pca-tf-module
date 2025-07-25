@@ -143,7 +143,7 @@ variable "pca_allowed_shared_templates" {
 variable "pca_ram_enable" {
   type        = bool
   description = "Enable this switch if you want to share PCA via RAM"
-  default     = false
+  default     = true
 }
 
 variable "pca_ram_share_name" {
