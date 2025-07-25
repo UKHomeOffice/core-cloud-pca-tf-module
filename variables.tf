@@ -139,6 +139,40 @@ variable "pca_allowed_shared_templates" {
   ]
 }
 
+# AWS RAM Sharing
+variable "pca_ram_enable" {
+  type        = bool
+  description = "Enable this switch if you want to share PCA via RAM"
+  default     = false
+}
+
+variable "pca_ram_share_name" {
+  type        = string
+  description = "The name of the Resource Share - Required if RAM Share is enabled"
+  default     = "EKS-ROOT-CA-TEST"
+}
+
+variable "pca_ram_permission_arns" {
+  type        = list(string)
+  description = "The list of managed RAM Permission ARNs that are desired - Required if RAM Share is enabled"
+  default     = ["arn:aws:ram::aws:permission/AWSRAMSubordinateCACertificatePathLen0IssuanceCertificateAuthority"]
+}
+
+variable "pca_ram_share_principals" {
+  type        = list(string)
+  description = "The list of principals to share PCA with, can be account IDs, org ARN, OU ARNs - Required if RAM Share is enabled"
+  default     = [
+    "484907493197",
+    "084828599494"
+  ]
+}
+
+variable "pca_ram_share_allow_external" {
+  type        = bool
+  description = "Enable this switch if PCA sharing is desired outside AWS Organisation"
+  default     = false
+}
+
 variable "tags" {
   type    = map(string)
   default = {}
