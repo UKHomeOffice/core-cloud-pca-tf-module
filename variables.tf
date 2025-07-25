@@ -149,7 +149,7 @@ variable "pca_ram_share_name" {
 variable "pca_ram_permission_arns" {
   type        = list(string)
   description = "The list of managed RAM Permission ARNs that are desired - Required if RAM Share is enabled"
-  default     = ["arn:aws:ram::aws:permission/AWSRAMSubordinateCACertificatePathLen0IssuanceCertificateAuthority"]
+  default     = []
 }
 
 variable "pca_ram_share_principals" {
