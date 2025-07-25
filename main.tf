@@ -185,7 +185,8 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
       "acm-pca:DescribeCertificateAuthority",
       "acm-pca:GetCertificate",
       "acm-pca:GetCertificateAuthorityCertificate",
-      "acm-pca:ListPermissions"
+      "acm-pca:ListPermissions",
+      "acm-pca:ListTags"
     ]
 
     principals {
@@ -206,48 +207,53 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_organisations"
     }
   }
 
-  statement {
-    sid    = "CrossAccountPCAAccessOrganisation2"
-    effect = "Allow"
-    actions = [
-      "acm-pca:IssueCertificate"
-    ]
+  dynamic "statement" {
+    for_each = toset(var.pca_allowed_shared_templates)
+    content {
+      sid    = "CrossAccountPCAAccessOrganisation${split("/", statement.key)[0]}"
+      effect = "Allow"
+      actions = [
+        "acm-pca:IssueCertificate"
+      ]
 
-    principals {
-      identifiers = ["*"]
-      type        = "*"
-    }
+      principals {
+        identifiers = ["*"]
+        type        = "*"
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "acm-pca:TemplateArn"
-      values   = ["arn:aws:acm-pca:::template/EndEntityCertificate/V1"]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "acm-pca:TemplateArn"
+        values   = ["arn:aws:acm-pca:::template/${statement.key}"]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values   = [var.pca_allowed_aws_organisation]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "aws:PrincipalOrgID"
+        values   = [var.pca_allowed_aws_organisation]
+      }
 
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:PrincipalAccount"
-      values   = ["${data.aws_caller_identity.current.account_id}"]
+      condition {
+        test     = "StringNotEquals"
+        variable = "aws:PrincipalAccount"
+        values   = ["${data.aws_caller_identity.current.account_id}"]
+      }
     }
   }
+
 }
 
 data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
   count = length(var.pca_allowed_aws_accounts) > 0 ? 1 : 0
   statement {
-    sid    = "CrossAccountPCAAccessAccount1"
+    sid    = "CrossAccountPCAAccessAccount"
     effect = "Allow"
     actions = [
       "acm-pca:DescribeCertificateAuthority",
       "acm-pca:GetCertificate",
       "acm-pca:GetCertificateAuthorityCertificate",
-      "acm-pca:ListPermissions"
+      "acm-pca:ListPermissions",
+      "acm-pca:ListTags"
     ]
 
     principals {
@@ -256,22 +262,25 @@ data "aws_iam_policy_document" "pca_cross_account_resource_policy_accounts" {
     }
   }
 
-  statement {
-    sid    = "CrossAccountPCAAccessAccount2"
-    effect = "Allow"
-    actions = [
-      "acm-pca:IssueCertificate"
-    ]
+  dynamic "statement" {
+    for_each = toset(var.pca_allowed_shared_templates)
+    content {
+      sid    = "CrossAccountPCAAccessAccoun${split("/", statement.key)[0]}"
+      effect = "Allow"
+      actions = [
+        "acm-pca:IssueCertificate"
+      ]
 
-    principals {
-      type        = "AWS"
-      identifiers = var.pca_allowed_aws_accounts
-    }
+      principals {
+        type        = "AWS"
+        identifiers = var.pca_allowed_aws_accounts
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "acm-pca:TemplateArn"
-      values   = ["arn:aws:acm-pca:::template/EndEntityCertificate/V1"]
+      condition {
+        test     = "StringEquals"
+        variable = "acm-pca:TemplateArn"
+        values   = ["arn:aws:acm-pca:::template/${statement.key}"]
+      }
     }
   }
 }
@@ -288,4 +297,32 @@ resource "aws_acmpca_policy" "pca_cross_account_resource_policy" {
   count        = (length(var.pca_allowed_aws_organisation) > 0 || length(var.pca_allowed_aws_accounts) > 0) ? 1 : 0
   resource_arn = aws_acmpca_certificate_authority.this.arn
   policy       = data.aws_iam_policy_document.pca_cross_account_resource_policy_combined[0].json
+}
+
+# AWS RAM to Share CA if Desired
+resource "aws_ram_resource_share" "share_pca" {
+  count = var.pca_ram_enable ? 1 : 0
+
+  name                      = var.pca_ram_share_name
+  allow_external_principals = var.pca_ram_share_allow_external
+
+  permission_arns = [
+    "arn:aws:ram::aws:permission/AWSRAMSubordinateCACertificatePathLen0IssuanceCertificateAuthority"
+  ]
+
+  tags = var.tags
+}
+
+resource "aws_ram_resource_association" "share_pca_association" {
+  count = var.pca_ram_enable ? 1 : 0
+
+  resource_share_arn = aws_ram_resource_share.share_pca[0].arn
+  resource_arn       = aws_acmpca_certificate_authority.this.arn
+}
+
+resource "aws_ram_principal_association" "share_pca_principals" {
+  for_each = toset(var.pca_ram_share_principals)
+
+  resource_share_arn = aws_ram_resource_share.share_pca[0].arn
+  principal          = each.key
 }

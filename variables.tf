@@ -114,6 +114,7 @@ variable "pca_acm_access" {
   default     = false
 }
 
+# AWS Resource Policy Settings
 variable "pca_allowed_aws_organisation" {
   type        = string
   description = "Optional - Cross Account - The AWS OrgID that can request certificates from the PCA"
@@ -124,6 +125,43 @@ variable "pca_allowed_aws_accounts" {
   type        = list(string)
   description = "Optional - Cross Account - The AWS Accounts that can request certificates from the PCA"
   default     = []
+}
+
+variable "pca_allowed_shared_templates" {
+  type        = list(string)
+  description = "Optional - The list of templates to assign to the CA Shared Resource Policy"
+  default     = []
+}
+
+# AWS RAM Sharing
+variable "pca_ram_enable" {
+  type        = bool
+  description = "Enable this switch if you want to share PCA via RAM"
+  default     = false
+}
+
+variable "pca_ram_share_name" {
+  type        = string
+  description = "The name of the Resource Share - Required if RAM Share is enabled"
+  default     = ""
+}
+
+variable "pca_ram_permission_arns" {
+  type        = list(string)
+  description = "The list of managed RAM Permission ARNs that are desired - Required if RAM Share is enabled"
+  default     = []
+}
+
+variable "pca_ram_share_principals" {
+  type        = list(string)
+  description = "The list of principals to share PCA with, can be account IDs, org ARN, OU ARNs - Required if RAM Share is enabled"
+  default     = []
+}
+
+variable "pca_ram_share_allow_external" {
+  type        = bool
+  description = "Enable this switch if PCA sharing is desired outside AWS Organisation"
+  default     = false
 }
 
 variable "tags" {
