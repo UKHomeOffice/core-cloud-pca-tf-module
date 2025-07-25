@@ -321,7 +321,7 @@ resource "aws_ram_resource_association" "share_pca_association" {
 }
 
 resource "aws_ram_principal_association" "share_pca_principals" {
-  for_each = toset(pca_ram_share_principals)
+  for_each = toset(var.pca_ram_share_principals)
 
   resource_share_arn = aws_ram_resource_share.share_pca[0].arn
   principal          = each.key
